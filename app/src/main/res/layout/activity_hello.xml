@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".HelloActivity">
+
+
+<EditText
+    android:id="@+id/input"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="请输入摄氏温度：只能输入数字"
+    android:textSize="20sp"
+    android:inputType="number"
+    android:digits="1234567890"/>
+
+<Button
+    android:id="@+id/btn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="转化为华氏温度"
+    android:textSize="20sp"/>
+
+<TextView
+        android:id="@+id/txtout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:textSize="25dp"
+        android:text="结果为："
+        android:layout_marginBottom="20dp" />
+
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">First</string>
+    <string name="str1">Hello world！</string>
+    <string name="btn_dollar">Dollar</string>
+    <string name="btn_euro">Euro</string>
+    <string name="btn_won">Won</string>
+    <string name="rmb_hint">Input RMB</string>
+</resources>

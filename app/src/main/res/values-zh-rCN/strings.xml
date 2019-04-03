@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">First</string>
+    <string name="str1">你好，世界！</string>
+    <string name="btn_dollar">美元</string>
+    <string name="btn_euro">欧元</string>
+    <string name="btn_won">韩元</string>
+    <string name="rmb_hint">请输入人民币</string>
+</resources>
