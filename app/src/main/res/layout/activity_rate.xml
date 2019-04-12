@@ -48,4 +48,12 @@
         android:text="@string/btn_won"
         android:onClick="onClickRate"/>
 
+    <Button
+        android:id="@+id/btn_opencfg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_orange_light"
+        android:text="@string/btn_opencfg_label"
+        android:onClick="openOne"/>
+
 </LinearLayout>
