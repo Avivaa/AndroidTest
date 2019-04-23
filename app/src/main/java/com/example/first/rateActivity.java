@@ -16,13 +16,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class rateActivity extends AppCompatActivity implements Runnable{
 
@@ -43,8 +45,8 @@ public class rateActivity extends AppCompatActivity implements Runnable{
         show = findViewById(R.id.showout);
 
         //获取sp里面保存的数据
-        SharedPreferences sharedPreferences = getSharedPreferences("myrate", Activity.MODE_PRIVATE);
-        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("myrate", Activity.MODE_PRIVATE);  //名称对照；可以多个文件
+        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this); //不可以自己起名字，只可以一个默认文件
         dollarRate=sharedPreferences.getFloat("dollar_rate",0.0f);
         euroRate=sharedPreferences.getFloat("euro_rate",0.0f);
         wonRate=sharedPreferences.getFloat("won_rate",0.0f);
@@ -61,9 +63,16 @@ public class rateActivity extends AppCompatActivity implements Runnable{
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what==3){
-                    String str=(String)msg.obj;
-                    Log.i("open","handlemessage: getMessage msg="+ str);
-                    show.setText(str);
+                    Bundle bdl=(Bundle)msg.obj;
+                    dollarRate=bdl.getFloat("dollar-rate");
+                    euroRate=bdl.getFloat("euro-rate");
+                    wonRate=bdl.getFloat("won-rate");
+
+                    Log.i("handle","handleMessage: dollarRate:" +dollarRate );
+                    Log.i("handle","handleMessage: euroRate:" +euroRate );
+                    Log.i("handle","handleMessage: wonRate:" +wonRate );
+
+                    Toast.makeText(rateActivity.this,"汇率已更新",Toast.LENGTH_SHORT).show();
                 }
                 super.handleMessage(msg);
             }
@@ -135,7 +144,7 @@ public class rateActivity extends AppCompatActivity implements Runnable{
             wonRate= bundle.getFloat("key_won",0.0f);
 
             SharedPreferences sharedPreferences = getSharedPreferences("myrate", Activity.MODE_PRIVATE);
-            SharedPreferences.Editor editor= sharedPreferences.edit();
+            SharedPreferences.Editor editor= sharedPreferences.edit(); //编辑改写都要用editor
             editor.putFloat("dollar_rate",dollarRate);
             editor.putFloat("euro_rate",euroRate);
             editor.putFloat("won_rate",wonRate);
@@ -156,24 +165,66 @@ public class rateActivity extends AppCompatActivity implements Runnable{
                 e.printStackTrace();
             }
         }
-        Message msg= handler.obtainMessage(3);
-        //msg.what= 3;
-        msg.obj= "hello";
-        handler.sendMessage(msg);//将msg放回队列由Android平台来管理
+
+        //获取bundle用于存取汇率
+        Bundle bundle = new Bundle();
 
         //获取网络数据
-        URL url= null;
+       /* URL url= null;
         try {
-            url = new URL("http://www.usd-cny.com/icbc.htm");
+            url = new URL("http://www.usd-cny.com/bankofchina.htm");
             HttpURLConnection http= (HttpURLConnection) url.openConnection();
             InputStream in= http.getInputStream();
             String html = inputStream2String(in);
             Log.i("open","run:html="+ html);
+            Document doc =Jsoup.parse(html);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
+
+        Document doc = null;
+        try {
+            doc = Jsoup.connect("http://www.usd-cny.com/bankofchina.htm").get();
+            Log.i("open","run:html"+ doc.title());
+            Elements tables= doc.getElementsByTag("table");
+            /*int i =1;
+            for(Element table: tables){
+                Log.i("open","run:table["+i+"]="+table);
+                i++;
+            }*/
+            Element table =tables.get(0);
+            //Log.i("open","run:table"+ table);
+            Elements tds= doc.getElementsByTag("td");
+            for(int i=0;i<tds.size();i+=6){
+                Element td1=tds.get(i);
+                Element td2=tds.get(i+5);
+                Log.i("open","run :"+td1.text()+"==>"+td2.text());
+                String str1=td1.text();
+                String val=td2.text();
+
+                if(str1.equals("美元")){
+                    bundle.putFloat("dollar-rate",100f/Float.parseFloat(val));
+                }else if(str1.equals("欧元")){
+                    bundle.putFloat("euro-rate",100f/Float.parseFloat(val));
+                } else if(str1.equals("韩元")) {
+                    bundle.putFloat("won-rate", 100f / Float.parseFloat(val));
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }//获取汇率存进bundle
+
+        //获取msg对象，用于返回主线程
+        Message msg= handler.obtainMessage(3);
+        //msg.what= 3;
+        msg.obj= bundle;
+        handler.sendMessage(msg);//将msg放回队列由Android平台来管理
+
 
 
     }

@@ -19,6 +19,24 @@ protected void onCreate(Bundle savedInstanceState) {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String scorea = scoreA.getText().toString();
+        String scoreb = scoreB.getText().toString();
+        outState.putString("teama_score",scorea);
+        outState.putString("teamb_score",scoreb);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String scorea= savedInstanceState.getString("teama_score");
+        String scoreb= savedInstanceState.getString("teamb_score");
+        scoreA.setText(scorea);
+        scoreB.setText(scoreb);
+    }
+
     public void btnAdd1(View btn) {
         if(btn.getId()==R.id.button1){
             showscore(3);
