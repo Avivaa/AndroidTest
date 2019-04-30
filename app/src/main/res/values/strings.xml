@@ -8,4 +8,5 @@
     <string name="btn_opencfg_label">CONFIG</string>
     <string name="btn_save_label">Save</string>
     <string name="menu_label">setting</string>
+    <string name="label_open_list">OpenList</string>
 </resources>

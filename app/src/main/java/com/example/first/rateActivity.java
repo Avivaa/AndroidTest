@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class rateActivity extends AppCompatActivity implements Runnable{
 
@@ -32,9 +35,12 @@ public class rateActivity extends AppCompatActivity implements Runnable{
     TextView show;
     Handler handler;
 
+
     float dollarRate = 0.0f;
     float euroRate = 0.0f;
     float wonRate = 0.0f;
+    String updateDate="";
+    String todayStr="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +56,27 @@ public class rateActivity extends AppCompatActivity implements Runnable{
         dollarRate=sharedPreferences.getFloat("dollar_rate",0.0f);
         euroRate=sharedPreferences.getFloat("euro_rate",0.0f);
         wonRate=sharedPreferences.getFloat("won_rate",0.0f);
+        updateDate=sharedPreferences.getString("update_date","");
+
+        //获取当前系统时间
+        Date today= Calendar.getInstance().getTime();
+        SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd"); //小写m表示分钟
+        todayStr= sdf.format(today);
+
+
         //log日志
         Log.i("open","onCreate: sp dollarRate="+dollarRate);
         Log.i("open","onCreate: sp euroRate="+euroRate);
         Log.i("open","onCreate: sp wonRate="+wonRate);
+        Log.i("open","onCreate: sp updateDate="+ updateDate);
 
-        //开启子线程
-        Thread t= new Thread(this);
-        t.start();
+        //判断时间
+        if(!todayStr.equals(updateDate)){
+            //开启子线程
+            Thread t= new Thread(this);
+            t.start();
+
+        }
 
         handler = new Handler(){
             @Override
@@ -71,6 +90,15 @@ public class rateActivity extends AppCompatActivity implements Runnable{
                     Log.i("handle","handleMessage: dollarRate:" +dollarRate );
                     Log.i("handle","handleMessage: euroRate:" +euroRate );
                     Log.i("handle","handleMessage: wonRate:" +wonRate );
+
+                    //保存更新的日期
+                    SharedPreferences sharedPreferences = getSharedPreferences("myrate", Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor= sharedPreferences.edit(); //编辑改写都要用editor
+                    editor.putString("update_date",todayStr);
+                    editor.putFloat("dollar_rate",dollarRate);
+                    editor.putFloat("euro_rate",euroRate);
+                    editor.putFloat("won_rate",wonRate);
+                    editor.apply();
 
                     Toast.makeText(rateActivity.this,"汇率已更新",Toast.LENGTH_SHORT).show();
                 }
@@ -131,7 +159,10 @@ public class rateActivity extends AppCompatActivity implements Runnable{
            Log.i("open","openOne: wonRate="+ wonRate);
 
            startActivityForResult(config,1);
-        }
+        }else if(item.getItemId()==R.id.open_list){
+           Intent list = new Intent(this,RateListActivity.class);
+           startActivity(list);
+       }
         return super.onOptionsItemSelected(item);
     }
 
