@@ -9,4 +9,7 @@
     <string name="btn_save_label">Save</string>
     <string name="menu_label">setting</string>
     <string name="label_open_list">OpenList</string>
+    <string name="rdo_home_label">首页</string>
+    <string name="rdo_func_label">功能</string>
+    <string name="rdo_setting_label">设置</string>
 </resources>
